@@ -1,10 +1,7 @@
 .app-container {
   height: 100%;
   margin: 0 auto;
+  max-width: 1024px;
   padding: 30px;
   box-sizing: border-box
-}
-
-.mat-app-background{
-  background: red;
 }

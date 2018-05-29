@@ -55,17 +55,35 @@
     }
   }
 
-  .city-name{
-    color: #00659D;
-    font-size: 3em;
-    white-space: nowrap;
+  .local-container{
     display: flex;
     overflow: hidden;
     align-items: center;
-    text-overflow: ellipsis;
 
-    .favorite-star{
+    .image-weather{
+      position: relative;
+      width: 80px;
+      margin-right: 15px;
+    }
+
+    .city-name{
+      overflow: hidden;
+      font-size: 3rem;
+      width: fit-content;
+      color: #00659D;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .favorite{
       margin-left: 30px;
+      min-width: 30px;
+      fill: #999;
+      cursor:pointer;
+
+      &.is-favorite{
+        animation: favoriteChange 300ms ease-in-out 0s forwards;
+      }
     }
   }
 
@@ -77,61 +95,35 @@
     white-space: nowrap;
   }
 
-  .weather-situation{
-    height: 100%;
-    margin: auto;
-
-    ul{
-      position: relative;
-      list-style: none;
-      padding: 10px;
-      >li{
-        position: relative;
-        padding: 7px 0px;
-        font-weight: 500;
-        color: #333;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-    }
-  }
-
   .widget{
     position: relative;
     padding: 10px;
     box-sizing: border-box;
     background-color: #ffffff;
-    box-shadow: 1px 3px 0 0px #e3e8eb, -1px -1px 0 0 #e3e8eb;
+    box-shadow: 1px 3px 0 0px #d4e4ee, -1px -1px 0 0 #e3e8eb;
     border-radius: 4px;
+    height: auto;
+    margin-bottom: 20px;
 
     >h3.title{
       font-size: 1.5em;
       color: #333;
       margin-bottom: 10px;
     }
+  }
+}
 
-    &.forecast{
-      height: auto;
+@keyframes favoriteChange {
+  0%{
+    transform: scale(1);
+  }
 
-      >.forecast-day{
-        margin: 0;
-        padding: 0;
+  50%{
+    transform: scale(1.3);
+  }
 
-        >.day-name{}
-        >.weather-icon{}
-        >.humidity{}
-        >.temp-min{}
-        >.temp{}
-      }
-    }
-
-    &.precipitation{
-
-    }
-
-    &.details{
-
-    }
+  100%{
+    transform: scale(1);
+    fill: #ed4b4b;
   }
 }

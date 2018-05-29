@@ -4,7 +4,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormControl } from '@angular/forms';
 import { Observable } from 'rxjs';
 import { map, startWith } from 'rxjs/operators';
-import { WeatherService } from './weather.service'
+import { WeatherService } from '../services/weather.service'
 import { Weather } from './weather'
 
 const cidades = require('../../data/CidadesCobertas.json')
@@ -23,20 +23,24 @@ export class WeatherSearchComponent implements OnInit {
   filteredCities: Observable<string[]>;
   myControl: FormControl = new FormControl();
 
-
   cities = cidades;
   states = estados;
   submitted = false;
 
+  isFetching = false;
   isFavorite = false;
   local = {}
   temperatura = {}
   situacao = {}
   forecast = []
 
-  constructor(private service: WeatherService) { }
+  constructor(private service: WeatherService) {
+
+  }
 
   ngOnInit() {
+    this.model.city = this.service.getFavoriteCity() || 6323074
+    this.loadDataFromCity(this.model.city)
     this.filteredCities = this.myControl.valueChanges.pipe(startWith(''), map(val => this.filter(val)));
   }
 
@@ -64,45 +68,42 @@ export class WeatherSearchComponent implements OnInit {
     this.submitted = false;
   }
 
-  togglefavorite(id) {
-    console.log(id);
+  togglefavorite(city) {
+    this.service.toggleFavorite(city)
+    this.isFavorite = this.service.isFavorite(city)
   }
 
   onSubmit() {
     // if (this.model.isValid()) {
+    this.loadDataFromCity(this.model.city)
+    // }else{ }
+  }
 
-    this.error = null
+  private loadCurrentWeather(city: number) {
+    return this.service.loadCurrentWeather(city).then(data => {
+      const { local, temperatura, situacao } = data
 
-    const requests = []
+      this.isFavorite = this.service.isFavorite(city)
+      this.local = local
+      this.temperatura = temperatura
+      this.situacao = situacao
+    })
+  }
 
-    requests.push(this.service.loadCurrentWeather(this.model.city || 3467747))
-    requests.push(this.service.loadForecastWeather(this.model.city || 3467747))
-
-    Promise.all(requests).then(results => {
-      const data = results[0];
-      this.local = {
-        id: this.model.city,
-        name: data.name,
-        country: data.sys.country,
-        sunset: new Date(data.sys.sunset * 1000),
-        sunrise: new Date(data.sys.sunrise * 1000)
-      }
-
-      this.temperatura = {
-        ...data.main,
-        temp: data.main.temp.toFixed(0)
-      }
-
-      this.situacao = {
-        ...data.weather[0],
-        icon: "http://openweathermap.org/img/w/" + data.weather[0].icon + ".png"
-      }
-
-      //FORECAST
-      const forecast = results[1]
+  private loadCurrentForecast(city: number) {
+    return this.service.loadForecastWeather(city).then(forecast => {
       this.forecast = Object.keys(forecast).map(key => forecast[key])
+    })
+  }
 
+  private loadDataFromCity(city: number) {
+    this.isFetching = true
+    Promise.all([
+      this.loadCurrentWeather(city),
+      this.loadCurrentForecast(city)
+    ]).then(results => {
       this.submitted = true;
+      this.isFetching = false
     }).catch(err => {
       console.log(err);
       this.error = 'Ocorreu algum erro ao realizar a requisição'

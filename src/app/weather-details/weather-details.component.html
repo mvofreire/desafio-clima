@@ -1,0 +1,20 @@
+<div class="weather-situation">
+  <div class="row center-sm center-xs start-lg">
+    <div class="col-xs-6">
+      <ul>
+        <li>Temperatura Minima: {{temperatura.temp_min}}°c</li>
+        <li>Temperatura Maxima: {{temperatura.temp_max}}°c</li>
+        <li>Nascer do Sol: {{local.sunrise?local.sunrise.toLocaleTimeString():''}}</li>
+        <li>Por do Sol: {{local.sunset?local.sunset.toLocaleTimeString():''}}</li>
+      </ul>
+    </div>
+    <div class="col-xs-6">
+      <ul>
+        <li>Humidade: {{temperatura.humidity}} %</li>
+        <li>Pressão: {{temperatura.pressure}} psi</li>
+        <li *ngIf="temperatura.sea_level">Nivel do Mar: {{temperatura.sea_level}} m</li>
+        <li *ngIf="temperatura.grnd_level">Elevação: {{temperatura.grnd_level}} m</li>
+      </ul>
+    </div>
+  </div>
+</div>

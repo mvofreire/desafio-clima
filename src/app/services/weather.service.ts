@@ -21,10 +21,6 @@ export class WeatherService {
       return Promise.resolve(CACHE[city])
     }
 
-    if (city in localStorage) {
-      return Promise.resolve(JSON.parse(localStorage[city]))
-    }
-
     return new Promise((resolve) => {
       this.http.get(this.endpoint, {
         params: {
@@ -32,10 +28,29 @@ export class WeatherService {
           APPID: API_KEY,
           units: 'metric'
         }
-      }).subscribe(data => {
+      }).subscribe((data: any) => {
         CACHE[city] = data
-        localStorage.setItem(city, JSON.stringify(data));
-        resolve(data)
+        const { name, sys, main, weather } = data
+        console.log({ name, sys, main, weather });
+
+        const local = {
+          id: city,
+          name: name,
+          country: sys.country,
+          sunset: new Date(sys.sunset * 1000),
+          sunrise: new Date(sys.sunrise * 1000)
+        }
+
+        const temperatura = {
+          ...main,
+          temp: main.temp.toFixed(0)
+        }
+
+        const situacao = {
+          ...weather[0] || {}
+        }
+
+        resolve({ local, temperatura, situacao })
       });
     })
   }
@@ -57,21 +72,34 @@ export class WeatherService {
           const date = new Date(item.dt * 1000)
           const day = date.getDay()
           if (!(day in response)) {
-            const { temp, temp_min, temp_max, humidity } = item.main
             const { icon } = item.weather[0]
 
             response[day] = {
+              ...item.main,
+              temp_max: parseInt(item.main.temp_max.toFixed(0)),
+              temp_min: parseInt(item.main.temp_min.toFixed(0)),
+              temp: parseInt(item.main.temp.toFixed(0)),
               dayName: `${dayName[day]}`,
-              temp,
-              humidity,
-              temp_min,
-              temp_max,
-              icon: `http://openweathermap.org/img/w/${icon}.png`
+              icon
             }
           }
         })
+        console.log(response);
+
         resolve(response)
       })
     });
+  }
+
+  getFavoriteCity() {
+    return ('favorite' in localStorage) ? JSON.parse(localStorage['favorite']) : null
+  }
+
+  toggleFavorite(city) {
+    return localStorage.setItem("favorite", this.isFavorite(city) ? null : city)
+  }
+
+  isFavorite(city) {
+    return ('favorite' in localStorage) && (parseInt(localStorage['favorite']) === parseInt(city))
   }
 }

@@ -1,5 +1,5 @@
 <div class="weather-component">
-  <form [ngClass]="{'weather-form':true, 'hide':submitted}" (submit)="onSubmit(model)">
+  <form [ngClass]="{'weather-form':true}" (submit)="onSubmit(model)">
     <div class="row middle-lg">
       <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3">
         <mat-form-field class="input-item">
@@ -31,80 +31,49 @@
   <div [ngClass]="{'errors':true, 'visible':error!==null}">
     {{error}}
   </div>
-  <div [ngClass]="{'weather-result':true, 'visible':submitted}">
-
+  <app-loading *ngIf="isFetching"></app-loading>
+  <div [ngClass]="{'weather-result':true, 'visible':submitted && !isFetching}">
     <div class="row middle-xs section">
-      <div class="col-xs-12 col-sm-10 col-md-10 col-lg-11">
-        <div class="city-name">
-          <img *ngIf="situacao.icon" src="{{situacao.icon}}" alt="">
-          <span>{{local.name}} - {{local.country}}</span>
-          <mat-icon class="favorite-star" (click)="togglefavorite(local.id)">
-            {{isFavorite?'star':'star_border'}}
-          </mat-icon>
+      <div class="col-xs-12">
+        <div class="local-container">
+          <img class="image-weather" *ngIf="situacao.icon" src="/assets/icons/weather/{{situacao.icon}}.svg" alt="">
+          <span class="city-name">{{local.name}} - {{local.country}}</span>
+          <svg (click)="togglefavorite(local.id)" [ngClass]="{'is-favorite':isFavorite, 'favorite':true}" style="enable-background:new 0 0 16 16;"
+            version="1.1" viewBox="0 0 16 16" xml:space="preserve">
+            <path d="M8.612,2.347L8,2.997l-0.612-0.65c-1.69-1.795-4.43-1.795-6.12,0c-1.69,1.795-1.69,4.706,0,6.502l0.612,0.65L8,16  l6.12-6.502l0.612-0.65c1.69-1.795,1.69-4.706,0-6.502C13.042,0.551,10.302,0.551,8.612,2.347z"
+            />
+          </svg>
         </div>
-      </div>
-      <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1 end-xs">
-        <button color="primary" mat-stroked-button (click)="changeCity()">
-          <mat-icon>refresh</mat-icon>
-        </button>
       </div>
     </div>
 
     <div class="row section">
-      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 center-xs">
+      <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 center-xs">
         <span class="current-temp"> {{temperatura.temp}}° C </span>
       </div>
-      <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
-        <div class="weather-situation">
-          <div class="row">
-            <div class="col-xs-6">
-              <ul>
-                <li>Temperatura Minima: {{temperatura.temp_min}}</li>
-                <li>Temperatura Maxima: {{temperatura.temp_max}}</li>
-                <li>Nascer do Sol: {{local.sunrise?local.sunrise.toLocaleTimeString():''}}</li>
-                <li>Por do Sol: {{local.sunset?local.sunset.toLocaleTimeString():''}}</li>
-              </ul>
-            </div>
-            <div class="col-xs-6">
-              <ul>
-                <li>Nivel do mar: {{temperatura.sea_level}} m</li>
-                <li>Humidade: {{temperatura.humidity}} %</li>
-                <li>Pressão: {{temperatura.pressure}} psi</li>
-                <li>Elevação: {{temperatura.grnd_level}} m</li>
-              </ul>
-            </div>
-          </div>
+      <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+        <app-weather-details *ngIf="temperatura && local" [temperatura]="temperatura" [local]="local"></app-weather-details>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-xs-12">
+        <div class="widget details">
+          <h3 class="title">Oque fazer?</h3>
+          <app-weather-what-i-do *ngIf="situacao" [situacao]="situacao"></app-weather-what-i-do>
         </div>
       </div>
     </div>
-
     <div class="row section">
       <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 ">
         <div class="widget forecast">
           <h3 class="title">Temperatura para os próximos dias</h3>
-          <div class="row forecast-day middle-xs">
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-6 humidity">Humidade</div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp-min">Min</div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp end-xs">Temperatura</div>
-          </div>
-          <div class="row forecast-day middle-xs" *ngFor="let item of forecast">
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 day-name">{{item.dayName}}</div>
-            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 weather-icon">
-              <img src="{{item.icon}}" />
-            </div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 humidity">{{item.humidity}}%</div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp-min">{{item.temp_min}} °c</div>
-            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp end-xs">{{item.temp}} °c</div>
-          </div>
+          <app-weather-forecast *ngIf="forecast.length>0" [data]="forecast"></app-weather-forecast>
         </div>
       </div>
       <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 ">
         <div class="widget precipitation" style="margin-bottom: 20px">
           <h3 class="title">Evolução nos próximos dias</h3>
           <app-weather-chart *ngIf="forecast.length>0" [data]="forecast"></app-weather-chart>
-        </div>
-        <div class="widget details">
-          <h3 class="title">Oque fazer?</h3>
         </div>
       </div>
     </div>

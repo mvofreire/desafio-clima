@@ -1,21 +1,13 @@
-import { Component, OnInit, Input } from '@angular/core';
+import { Component, OnInit, Input, OnChanges, SimpleChanges } from '@angular/core';
 import { Chart } from 'angular-highcharts'
-
-type Forecast = {
-  dayName: string,
-  humidity: number,
-  icon: string,
-  temp: number,
-  temp_min: number,
-  temp_max: number
-}
+import { Forecast } from '../types/Forecast'
 
 @Component({
   selector: 'app-weather-chart',
   templateUrl: './weather-chart.component.html',
   styleUrls: ['./weather-chart.component.css']
 })
-export class WeatherChartComponent implements OnInit {
+export class WeatherChartComponent implements OnInit, OnChanges {
 
   @Input() data: Array<Forecast>
   chart = {}
@@ -24,8 +16,14 @@ export class WeatherChartComponent implements OnInit {
   }
 
   ngOnInit() {
-    console.log(this.data);
+    this.setChartData()
+  }
 
+  ngOnChanges(changes: SimpleChanges) {
+    this.setChartData()
+  }
+
+  setChartData() {
     this.chart = new Chart({
       chart: {
         type: 'line'
@@ -53,7 +51,11 @@ export class WeatherChartComponent implements OnInit {
         }
       },
       series: [{
-        data: this.data.map(item => item.temp)
+        name: 'Temperatura 1',
+        data: this.data.map(item => item.temp_max)
+      }, {
+        name: 'Temperatura 2',
+        data: this.data.map(item => item.temp_min)
       }]
     })
   }

@@ -1,0 +1,18 @@
+.forecast-container > .forecast-day {
+  margin: 0;
+  padding: 0;
+}
+.forecast-container > .forecast-day .day-name {
+  white-space: nowrap;
+  width: 100%;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+.forecast-container > .forecast-day > .temp-min,
+.forecast-container > .forecast-day > .temp {
+  white-space: nowrap;
+  overflow: hidden;
+}
+.forecast-container > .forecast-day > .weather-icon > img {
+  width: 40px;
+}

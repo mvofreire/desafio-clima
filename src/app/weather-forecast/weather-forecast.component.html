@@ -1,0 +1,22 @@
+<div class="forecast-container">
+  <div class="row forecast-day header middle-xs">
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 center-xs col-xs-offset-6 humidity">
+      <img src="/assets/icons/humidity.svg" width="30"/>
+    </div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 center-xs temp-min">
+      <img src="/assets/icons/therm-low.svg" width="30"/>
+    </div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp center-xs">
+      <img src="/assets/icons/therm-full.svg" width="30"/>
+    </div>
+  </div>
+  <div class="row forecast-day middle-xs" *ngFor="let item of data">
+    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 day-name start-xs">{{item.dayName}}</div>
+    <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 weather-icon center-xs">
+      <img src="/assets/icons/weather/{{item.icon}}.svg" />
+    </div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 humidity center-xs">{{item.humidity}}%</div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp-min center-xs">{{item.temp_min}} °c</div>
+    <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp end-xs">{{item.temp_max}} °c</div>
+  </div>
+</div>

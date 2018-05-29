@@ -1,10 +1,22 @@
-.app-logo {
+.app-menu-toolbar {
+  background: #00659D;
+}
+.app-menu-toolbar .app-logo {
   width: 48px;
   height: 48px;
   fill: #ffffff;
 }
-.menu-wrapper {
+.app-menu-toolbar .menu-wrapper {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   margin: 0 auto;
+}
+.app-menu-toolbar .menu-wrapper .app-title-container {
+  display: flex;
+  align-items: center;
+}
+.app-menu-toolbar .menu-wrapper .app-title-container .app-title {
+  font-weight: 600;
+  font-size: 2rem;
+  margin-left: 20px;
 }
