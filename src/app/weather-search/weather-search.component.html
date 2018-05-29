@@ -1,0 +1,112 @@
+<div class="weather-component">
+  <form [ngClass]="{'weather-form':true, 'hide':submitted}" (submit)="onSubmit(model)">
+    <div class="row middle-lg">
+      <div class="col-xs-12 col-sm-4 col-md-4 col-lg-3">
+        <mat-form-field class="input-item">
+          <mat-select name="state" placeholder="Selecione um Estado" [(ngModel)]="model.state">
+            <mat-option *ngFor="let state of states" [value]="state.ID">
+              {{ state.Nome }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+        <mat-form-field class="input-item">
+          <input matInput type="text" placeholder="Escolha uma cidade" aria-label="Cidades" name="city" [formControl]="myControl" [matAutocomplete]="auto"
+          />
+          <mat-autocomplete #auto="matAutocomplete" [displayWith]="displayCityName">
+            <mat-option *ngFor="let city of filteredCities | async" [value]="city" (onSelectionChange)="onSelectCity(city)">
+              {{ city.Nome }}
+            </mat-option>
+          </mat-autocomplete>
+        </mat-form-field>
+      </div>
+      <div class="col-xs-12 col-sm-2 col-md-2 col-lg-3 end-xs">
+        <button color="primary" mat-fab (click)="changeCity()">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
+    </div>
+  </form>
+  <div [ngClass]="{'errors':true, 'visible':error!==null}">
+    {{error}}
+  </div>
+  <div [ngClass]="{'weather-result':true, 'visible':submitted}">
+
+    <div class="row middle-xs section">
+      <div class="col-xs-12 col-sm-10 col-md-10 col-lg-11">
+        <div class="city-name">
+          <img *ngIf="situacao.icon" src="{{situacao.icon}}" alt="">
+          <span>{{local.name}} - {{local.country}}</span>
+          <mat-icon class="favorite-star" (click)="togglefavorite(local.id)">
+            {{isFavorite?'star':'star_border'}}
+          </mat-icon>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-2 col-md-2 col-lg-1 end-xs">
+        <button color="primary" mat-stroked-button (click)="changeCity()">
+          <mat-icon>refresh</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div class="row section">
+      <div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 center-xs">
+        <span class="current-temp"> {{temperatura.temp}}° C </span>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-8 col-lg-8">
+        <div class="weather-situation">
+          <div class="row">
+            <div class="col-xs-6">
+              <ul>
+                <li>Temperatura Minima: {{temperatura.temp_min}}</li>
+                <li>Temperatura Maxima: {{temperatura.temp_max}}</li>
+                <li>Nascer do Sol: {{local.sunrise?local.sunrise.toLocaleTimeString():''}}</li>
+                <li>Por do Sol: {{local.sunset?local.sunset.toLocaleTimeString():''}}</li>
+              </ul>
+            </div>
+            <div class="col-xs-6">
+              <ul>
+                <li>Nivel do mar: {{temperatura.sea_level}} m</li>
+                <li>Humidade: {{temperatura.humidity}} %</li>
+                <li>Pressão: {{temperatura.pressure}} psi</li>
+                <li>Elevação: {{temperatura.grnd_level}} m</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row section">
+      <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 ">
+        <div class="widget forecast">
+          <h3 class="title">Temperatura para os próximos dias</h3>
+          <div class="row forecast-day middle-xs">
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 col-xs-offset-6 humidity">Humidade</div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp-min">Min</div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp end-xs">Temperatura</div>
+          </div>
+          <div class="row forecast-day middle-xs" *ngFor="let item of forecast">
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 day-name">{{item.dayName}}</div>
+            <div class="col-xs-3 col-sm-3 col-md-3 col-lg-3 weather-icon">
+              <img src="{{item.icon}}" />
+            </div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 humidity">{{item.humidity}}%</div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp-min">{{item.temp_min}} °c</div>
+            <div class="col-xs-2 col-sm-2 col-md-2 col-lg-2 temp end-xs">{{item.temp}} °c</div>
+          </div>
+        </div>
+      </div>
+      <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 ">
+        <div class="widget precipitation" style="margin-bottom: 20px">
+          <h3 class="title">Evolução nos próximos dias</h3>
+          <app-weather-chart *ngIf="forecast.length>0" [data]="forecast"></app-weather-chart>
+        </div>
+        <div class="widget details">
+          <h3 class="title">Oque fazer?</h3>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
